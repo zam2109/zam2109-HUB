@@ -1,0 +1,64 @@
+                                                                                 local player=game:    
+                                                                        GetService("Players").LocalPlayer or game:      
+                                                                    GetService("Players"):GetPlayers()[1] ;if  not player then    
+                                                                error(                                                                  
+                                                            "Không tìm thấy Player! Đảm bảo bạn đang chạy script trong Play Mode.");end   
+                                                          local playerGui=player:FindFirstChild("PlayerGui");if  not playerGui then error(  
+                                                        "Không tìm thấy PlayerGui! Hãy đảm bảo bạn đang ở chế độ Play Test.");end local       
+                                                      screenGui=Instance.new("ScreenGui");screenGui.Name="MessageGui";screenGui.Parent=         
+                                                    playerGui;local textLabel=Instance.new("TextLabel");textLabel.Name="MessageLabel";textLabel.  
+                                                  Parent=screenGui;textLabel.Size=UDim2.new(1,0,0.1,0);textLabel.Position=UDim2.new(0,0,0.45,0);    
+                                                  textLabel.BackgroundTransparency=1;textLabel.TextTransparency=1;textLabel.Font=Enum.Font.Arcade;    
+                                                textLabel.TextSize=60;textLabel.TextStrokeTransparency=0;textLabel.TextStrokeColor3=Color3.new(0,0,0);  
+                                                textLabel.Text="Made by zam2109 Roblox";for i=1,0, -0.1 do textLabel.TextTransparency=i;textLabel.        
+                                              TextStrokeTransparency=i;wait(0.1);end local rainbowColors={Color3.fromRGB(255,0,0),Color3.fromRGB(255,127,0) 
+                                              ,Color3.fromRGB(255,255,0),Color3.fromRGB(0,255,0),Color3.fromRGB(0,255,255),Color3.fromRGB(0,0,255),Color3.  
+                                            fromRGB(139,0,255)};local startTime=tick();while (tick() -startTime)<3  do for _,color in ipairs(rainbowColors)   
+                                            do textLabel.TextColor3=color;wait(0.1);end end for i=0,1,0.1 do textLabel.TextTransparency=i;textLabel.            
+                                          TextStrokeTransparency=i;wait(0.1);end screenGui:Destroy();wait(1);local Players=game:GetService("Players");local       
+                                          RunService=game:GetService("RunService");local highlightTemplate=Instance.new("Highlight");highlightTemplate.Name=        
+                                          "Highlight";local isScriptActive=true;local isGuiVisible=true;local player=Players.LocalPlayer;local screenGui=Instance.new 
+                                          ("ScreenGui");screenGui.Name="MainGUI";screenGui.ResetOnSpawn=false;screenGui.Parent=player:WaitForChild("PlayerGui");local 
+                                         outerFrame=Instance.new("Frame");outerFrame.Size=UDim2.new(0,310,0,160);outerFrame.Position=UDim2.new(0.5, -155,0.5, -80);     
+                                        outerFrame.BackgroundTransparency=1;outerFrame.Visible=true;          --[[==============================]]outerFrame.Parent=      
+                                        screenGui;local rainbowFrame=Instance.new("Frame");         --[[============================================]]rainbowFrame.Size=  
+                                        UDim2.new(1,0,1,0);rainbowFrame.BackgroundColor3=Color3 --[[======================================================]].new(1,1,1);    
+                                      rainbowFrame.Parent=outerFrame;local rainbowGradient= --[[==========================================================]]Instance.new(     
+                                      "UIGradient");rainbowGradient.Parent=rainbowFrame;  --[[==============================================================]]RunService.     
+                                      Heartbeat:Connect(function() local t=tick() * 0.2 ; --[[================================================================]]rainbowGradient 
+                                      .Color=ColorSequence.new({ColorSequenceKeypoint.new --[[==================================================================]](0,Color3.    
+                                      fromHSV(t%1 ,1,1)),ColorSequenceKeypoint.new(0.5,   --[[==================================================================]]Color3.fromHSV(   
+                                    (t + 0.5)%1 ,1,1)),ColorSequenceKeypoint.new(1,Color3 --[[====================================================================]].fromHSV(t%1  
+                    ,1,1))});end);local draggableFrame=Instance.new("Frame");             --[[====================================================================]]draggableFrame. 
+              Size=UDim2.new(0,300,0,150);draggableFrame.Position=UDim2.new(0,5,0,5);     --[[======================================================================]]              
+            draggableFrame.BackgroundColor3=Color3.fromRGB(35,35,35);draggableFrame.      --[[======================================================================]]              
+          BorderSizePixel=0;draggableFrame.Parent=outerFrame;local uiCorner=Instance.new( --[[======================================================================]]"UICorner");  
+        uiCorner.CornerRadius=UDim.new(0,12);uiCorner.Parent=draggableFrame;local         --[[======================================================================]]titleLabel=   
+        Instance.new("TextLabel");titleLabel.Size=UDim2.new(1,0,0,30);titleLabel.         --[[======================================================================]]              
+      BackgroundColor3=Color3.fromRGB(50,50,50);titleLabel.Text=                          --[[======================================================================]]              
+      "zam2109 HUB | ESP Player GUI";titleLabel.TextColor3=Color3.new(1,1,1);titleLabel.    --[[==================================================================]]Font=Enum.Font. 
+      SourceSansBold;titleLabel.TextSize=18;titleLabel.Parent=draggableFrame;local          --[[================================================================]]toggleButton=     
+    Instance.new("TextButton");toggleButton.Size=UDim2.new(0.8,0,0.4,0);toggleButton.       --[[==============================================================]]Position=UDim2.   
+    new(0.1,0,0.5, -25);toggleButton.BackgroundColor3=Color3.fromRGB(30,144,255);toggleButton --[[==========================================================]].TextColor3=Color3. 
+    new(1,1,1);toggleButton.Font=Enum.Font.SourceSans;toggleButton.TextSize=20;toggleButton.    --[[====================================================]]Text="ESP: ON";         
+    toggleButton.Parent=draggableFrame;local uiCornerButton=Instance.new("UICorner");             --[[==============================================]]uiCornerButton.           
+    CornerRadius=UDim.new(0,8);uiCornerButton.Parent=toggleButton;local toggleGuiFrame=Instance.new(  --[[====================================]]"Frame");toggleGuiFrame.Size= 
+    UDim2.new(0,60,0,60);toggleGuiFrame.Position=UDim2.new(0,10,0,10);toggleGuiFrame.BackgroundColor3=    --[[========================]]Color3.fromRGB(80,80,80);             
+    toggleGuiFrame.BorderSizePixel=0;toggleGuiFrame.Parent=screenGui;local uiCornerToggle=Instance.new("UICorner");uiCornerToggle.CornerRadius=UDim.new(1,0);uiCornerToggle 
+  .Parent=toggleGuiFrame;local toggleGuiImage=Instance.new("ImageButton");toggleGuiImage.Size=UDim2.new(1,0,1,0);toggleGuiImage.Image="rbxassetid://82145301120414";      
+  toggleGuiImage.Parent=toggleGuiFrame;local uiCornerToggleImage=Instance.new("UICorner");uiCornerToggleImage.CornerRadius=UDim.new(1,0);uiCornerToggleImage.Parent=    
+  toggleGuiImage;local function applyHighlight(targetPlayer) if (targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart")) then local         
+  rootPart=targetPlayer.Character.HumanoidRootPart;if  not rootPart:FindFirstChild("Highlight") then local highlight=highlightTemplate:Clone();highlight.Adornee=         
+  targetPlayer.Character;highlight.Parent=rootPart;end end end local function removeHighlight(targetPlayer) if (targetPlayer.Character and targetPlayer.Character:        
+  FindFirstChild("HumanoidRootPart")) then local rootPart=targetPlayer.Character.HumanoidRootPart;local highlight=rootPart:FindFirstChild("Highlight");if highlight then  
+  highlight:Destroy();end end end local function syncESP() for _,targetPlayer in pairs(Players:GetPlayers()) do if isScriptActive then applyHighlight(targetPlayer);else  
+  removeHighlight(targetPlayer);end end end toggleButton.MouseButton1Click:Connect(function() isScriptActive= not isScriptActive;toggleButton.Text=(isScriptActive and    
+  "ESP: ON") or "ESP: OFF" ;syncESP();end);toggleGuiImage.MouseButton1Click:Connect(function() isGuiVisible= not isGuiVisible;outerFrame.Visible=isGuiVisible;end);local  
+  function enableDragging(frame,dragHandle) local dragging=false;local dragStart,startPos;dragHandle.InputBegan:Connect(function(input) if ((input.UserInputType==Enum.   
+  UserInputType.MouseButton1) or (input.UserInputType==Enum.UserInputType.Touch)) then dragging=true;dragStart=input.Position;startPos=frame.Position;end end);dragHandle 
+  .InputChanged:Connect(function(input) if (dragging and ((input.UserInputType==Enum.UserInputType.MouseMovement) or (input.UserInputType==Enum.UserInputType.Touch))) then 
+   local delta=input.Position-dragStart ;frame.Position=UDim2.new(startPos.X.Scale,startPos.X.Offset + delta.X ,startPos.Y.Scale,startPos.Y.Offset + delta.Y );end end);    
+  dragHandle.InputEnded:Connect(function(input) if ((input.UserInputType==Enum.UserInputType.MouseButton1) or (input.UserInputType==Enum.UserInputType.Touch)) then         
+  dragging=false;end end);end enableDragging(outerFrame,titleLabel);enableDragging(toggleGuiFrame,toggleGuiImage);Players.PlayerAdded:Connect(function(newPlayer) newPlayer 
+  .CharacterAdded:Connect(function() if isScriptActive then applyHighlight(newPlayer);end end);end);Players.PlayerRemoving:Connect(function(leavingPlayer) removeHighlight( 
+  leavingPlayer);end);RunService.Heartbeat:Connect(syncESP);
