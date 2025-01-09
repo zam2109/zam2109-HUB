@@ -1,5 +1,12 @@
+-- Kiểm tra nếu game chạy ở chế độ client
+if not game.Players.LocalPlayer then
+    warn("Script này cần được chạy ở chế độ Client hoặc Play mode!")
+    return
+end
+
 -- Tạo GUI trong ScreenGui
 local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "CustomGui"
 screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 -- Tạo nút Teleport UGC Place
