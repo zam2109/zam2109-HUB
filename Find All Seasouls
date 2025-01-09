@@ -1,12 +1,5 @@
--- Kiểm tra nếu game chạy ở chế độ client
-if not game.Players.LocalPlayer then
-    warn("Script này cần được chạy ở chế độ Client hoặc Play mode!")
-    return
-end
-
 -- Tạo GUI trong ScreenGui
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "CustomGui"
 screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 -- Tạo nút Teleport UGC Place
@@ -37,10 +30,18 @@ end)
 
 -- Chức năng Find All Seasouls
 findSeasoulsButton.MouseButton1Click:Connect(function()
+    local character = game.Players.LocalPlayer.Character
+    if not character then return end
+
+    local seasouls = {}
     for _, seasoul in pairs(workspace:GetDescendants()) do
-        if seasoul.Name == "Seasoul" then -- Giả sử các seasouls được đặt tên là "Seasoul"
-            seasoul.BrickColor = BrickColor.new("Bright yellow") -- Highlight các Seasouls
+        if seasoul:IsA("MeshPart") and (seasoul.Name == "raya_seasoul4" or seasoul.Name == "erizo_seasould") then
+            table.insert(seasouls, seasoul)
         end
     end
-    print("All Seasouls highlighted!")
+
+    for _, seasoul in ipairs(seasouls) do
+        character:PivotTo(seasoul.CFrame)
+        wait(1) -- Đợi 1 giây trước khi chuyển đến đối tượng tiếp theo
+    end
 end)
