@@ -1,9 +1,10 @@
 -- Tạo GUI chính và các thành phần
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
-local ToggleButton = Instance.new("ImageButton") -- Dùng ImageButton để chèn ảnh
+local ToggleButton = Instance.new("ImageButton")
+local TitleLabel = Instance.new("TextLabel") -- Thêm tiêu đề
 local ActivateButton = Instance.new("TextButton")
-local UICorner = Instance.new("UICorner") -- Làm tròn góc
+local UICorner = Instance.new("UICorner")
 
 -- Cấu hình ScreenGui
 ScreenGui.Name = "AutoTeleportGUI"
@@ -15,18 +16,30 @@ MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 MainFrame.BorderSizePixel = 0
-MainFrame.Size = UDim2.new(0, 220, 0, 120)
-MainFrame.Position = UDim2.new(0.5, -110, 0.5, -60)
+MainFrame.Size = UDim2.new(0, 240, 0, 140)
+MainFrame.Position = UDim2.new(0.5, -120, 0.5, -70)
 MainFrame.Visible = true
 
 -- Làm tròn MainFrame
 UICorner.Parent = MainFrame
-UICorner.CornerRadius = UDim.new(0, 10) -- Bo tròn góc 10px
+UICorner.CornerRadius = UDim.new(0, 10)
+
+-- Cấu hình TitleLabel (Tiêu đề GUI)
+TitleLabel.Name = "TitleLabel"
+TitleLabel.Parent = MainFrame
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Size = UDim2.new(1, 0, 0, 30)
+TitleLabel.Position = UDim2.new(0, 0, 0, 5)
+TitleLabel.Font = Enum.Font.GothamBold
+TitleLabel.TextSize = 16
+TitleLabel.Text = "zam2109 HUB | Collect Box"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Center
 
 -- Cấu hình ToggleButton (Nút bật/tắt GUI chính)
 ToggleButton.Name = "ToggleButton"
 ToggleButton.Parent = ScreenGui
-ToggleButton.BackgroundTransparency = 1 -- Trong suốt nền
+ToggleButton.BackgroundTransparency = 1
 ToggleButton.Size = UDim2.new(0, 60, 0, 60)
 ToggleButton.Position = UDim2.new(0, 20, 0, 20)
 ToggleButton.Image = "rbxassetid://82145301120414" -- Thay thế bằng ID ảnh của bạn
@@ -34,16 +47,16 @@ ToggleButton.ScaleType = Enum.ScaleType.Fit
 
 -- Làm tròn ToggleButton
 local ToggleUICorner = Instance.new("UICorner", ToggleButton)
-ToggleUICorner.CornerRadius = UDim.new(1, 0) -- Làm tròn hoàn toàn
+ToggleUICorner.CornerRadius = UDim.new(1, 0)
 
 -- Cấu hình ActivateButton (Nút bật/tắt tự động)
-ActivateButton.Name = "Collect Box"
+ActivateButton.Name = "ActivateButton"
 ActivateButton.Parent = MainFrame
 ActivateButton.BackgroundColor3 = Color3.fromRGB(70, 200, 70)
 ActivateButton.BorderSizePixel = 0
 ActivateButton.Size = UDim2.new(0, 200, 0, 50)
-ActivateButton.Position = UDim2.new(0, 10, 0, 35)
-ActivateButton.Text = "NO Collect Box"
+ActivateButton.Position = UDim2.new(0, 20, 0, 70)
+ActivateButton.Text = "Collecting!"
 ActivateButton.Font = Enum.Font.GothamBold
 ActivateButton.TextSize = 16
 ActivateButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -55,6 +68,35 @@ ActivateUICorner.CornerRadius = UDim.new(0, 10)
 -- Biến trạng thái
 local autoActive = false
 local guiVisible = true
+local dragStart, startPos, dragging = nil, nil, false
+
+-- Chức năng kéo GUI
+local function enableDragging(frame)
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+        end
+    end)
+
+    frame.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+
+    frame.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+end
+
+-- Bật tính năng kéo cho MainFrame và ToggleButton
+enableDragging(MainFrame)
+enableDragging(ToggleButton)
 
 -- Chức năng ẩn/hiện GUI chính
 ToggleButton.MouseButton1Click:Connect(function()
@@ -127,9 +169,11 @@ end
 ActivateButton.MouseButton1Click:Connect(function()
     autoActive = not autoActive
     if autoActive then
-        ActivateButton.Text = "Deactivate Auto"
+        ActivateButton.Text = "Stop Collecting"
+        ActivateButton.BackgroundColor3 = Color3.fromRGB(200, 70, 70)
         coroutine.wrap(autoTeleportAndClick)()
     else
-        ActivateButton.Text = "Activate Auto"
+        ActivateButton.Text = "Collecting!"
+        ActivateButton.BackgroundColor3 = Color3.fromRGB(70, 200, 70)
     end
 end)
