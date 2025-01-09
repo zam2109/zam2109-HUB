@@ -1,0 +1,39 @@
+-- Tạo GUI trong ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Tạo nút Teleport UGC Place
+local teleportButton = Instance.new("TextButton")
+teleportButton.Size = UDim2.new(0, 200, 0, 50)
+teleportButton.Position = UDim2.new(0.5, -100, 0.4, 0) -- Giữa màn hình
+teleportButton.Text = "Teleport UGC Place"
+teleportButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+teleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+teleportButton.Parent = screenGui
+
+-- Tạo nút Find All Seasouls
+local findSeasoulsButton = Instance.new("TextButton")
+findSeasoulsButton.Size = UDim2.new(0, 200, 0, 50)
+findSeasoulsButton.Position = UDim2.new(0.5, -100, 0.5, 10) -- Dưới nút Teleport
+findSeasoulsButton.Text = "Find All Seasouls"
+findSeasoulsButton.BackgroundColor3 = Color3.fromRGB(0, 255, 170)
+findSeasoulsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+findSeasoulsButton.Parent = screenGui
+
+-- Chức năng Teleport UGC Place
+teleportButton.MouseButton1Click:Connect(function()
+    local character = game.Players.LocalPlayer.Character
+    if character then
+        character:PivotTo(CFrame.new(Vector3.new(628, 10023, -1129)))
+    end
+end)
+
+-- Chức năng Find All Seasouls
+findSeasoulsButton.MouseButton1Click:Connect(function()
+    for _, seasoul in pairs(workspace:GetDescendants()) do
+        if seasoul.Name == "Seasoul" then -- Giả sử các seasouls được đặt tên là "Seasoul"
+            seasoul.BrickColor = BrickColor.new("Bright yellow") -- Highlight các Seasouls
+        end
+    end
+    print("All Seasouls highlighted!")
+end)
