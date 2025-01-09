@@ -1,0 +1,110 @@
+-- Tạo GUI chính và các thành phần
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local ToggleButton = Instance.new("TextButton")
+local ActivateButton = Instance.new("TextButton")
+
+-- Cấu hình GUI chính
+ScreenGui.Name = "AutoTeleportGUI"
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+MainFrame.BorderSizePixel = 0
+MainFrame.Size = UDim2.new(0, 200, 0, 100)
+MainFrame.Position = UDim2.new(0.5, -100, 0.5, -50)
+
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Parent = ScreenGui
+ToggleButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+ToggleButton.BorderSizePixel = 0
+ToggleButton.Size = UDim2.new(0, 100, 0, 50)
+ToggleButton.Position = UDim2.new(0, 10, 0, 10)
+ToggleButton.Text = "Toggle GUI"
+
+ActivateButton.Name = "ActivateButton"
+ActivateButton.Parent = MainFrame
+ActivateButton.BackgroundColor3 = Color3.fromRGB(70, 200, 70)
+ActivateButton.BorderSizePixel = 0
+ActivateButton.Size = UDim2.new(0, 180, 0, 50)
+ActivateButton.Position = UDim2.new(0, 10, 0, 25)
+ActivateButton.Text = "Activate Auto"
+
+-- Biến trạng thái
+local autoActive = false
+local guiVisible = true
+
+-- Chức năng ẩn/hiện GUI chính
+ToggleButton.MouseButton1Click:Connect(function()
+    guiVisible = not guiVisible
+    MainFrame.Visible = guiVisible
+end)
+
+-- Chức năng teleport và click
+local function autoTeleportAndClick()
+    -- Tìm tất cả các MeshPart có tên "Box"
+    local boxes = {}
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("MeshPart") and obj.Name == "Box" then
+            table.insert(boxes, obj)
+        end
+    end
+
+    if #boxes == 0 then
+        warn("No 'Box' MeshParts found in Workspace.")
+        return
+    end
+
+    local currentIndex = 1
+    local holdDuration = 2 -- Thời gian giữ click/kích hoạt (2 giây)
+
+    -- Hàm giữ click hoặc kích hoạt
+    local function holdClickOrActivate(part)
+        local clickDetector = part:FindFirstChildOfClass("ClickDetector")
+        if clickDetector then
+            local startTime = tick()
+            while tick() - startTime < holdDuration and autoActive do
+                fireclickdetector(clickDetector)
+                wait(0.1)
+            end
+        end
+
+        local proximityPrompt = part:FindFirstChildOfClass("ProximityPrompt")
+        if proximityPrompt then
+            local startTime = tick()
+            while tick() - startTime < holdDuration and autoActive do
+                fireproximityprompt(proximityPrompt, Enum.ProximityPromptInputType.Keyboard)
+                wait(0.1)
+            end
+        end
+    end
+
+    -- Vòng lặp chính
+    while autoActive do
+        local currentBox = boxes[currentIndex]
+
+        -- Teleport
+        if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = currentBox.CFrame + Vector3.new(0, 3, 0)
+        end
+
+        -- Click hoặc kích hoạt
+        holdClickOrActivate(currentBox)
+
+        -- Chuyển sang Box tiếp theo
+        currentIndex = (currentIndex % #boxes) + 1
+        wait(2) -- Chờ 2 giây
+    end
+end
+
+-- Kích hoạt/Tắt chức năng tự động
+ActivateButton.MouseButton1Click:Connect(function()
+    autoActive = not autoActive
+    if autoActive then
+        ActivateButton.Text = "Deactivate Auto"
+        autoTeleportAndClick()
+    else
+        ActivateButton.Text = "Activate Auto"
+    end
+end)
