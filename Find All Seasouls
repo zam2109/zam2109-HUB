@@ -34,12 +34,19 @@ findSeasoulsButton.MouseButton1Click:Connect(function()
     if not character then return end
 
     local seasouls = {}
-    for _, seasoul in pairs(workspace:GetDescendants()) do
-        if seasoul:IsA("MeshPart") and (seasoul.Name == "raya_seasoul4" or seasoul.Name == "erizo_seasould") then
-            table.insert(seasouls, seasoul)
+
+    -- Tìm kiếm các đối tượng trong các Model được chỉ định
+    for _, model in pairs(workspace:GetChildren()) do
+        if model:IsA("Model") and (model.Name == "raya_seasoul" or model.Name == "erizo_seasoul") then
+            for _, child in pairs(model:GetChildren()) do
+                if child:IsA("MeshPart") and (child.Name == "raya_seasoul4" or child.Name == "erizo_seasould") then
+                    table.insert(seasouls, child)
+                end
+            end
         end
     end
 
+    -- Teleport đến từng đối tượng
     for _, seasoul in ipairs(seasouls) do
         character:PivotTo(seasoul.CFrame)
         wait(1) -- Đợi 1 giây trước khi chuyển đến đối tượng tiếp theo
