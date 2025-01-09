@@ -1,35 +1,56 @@
 -- Tạo GUI chính và các thành phần
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
-local ToggleButton = Instance.new("TextButton")
+local ToggleButton = Instance.new("ImageButton") -- Dùng ImageButton để chèn ảnh
 local ActivateButton = Instance.new("TextButton")
+local UICorner = Instance.new("UICorner") -- Làm tròn góc
 
--- Cấu hình GUI chính
+-- Cấu hình ScreenGui
 ScreenGui.Name = "AutoTeleportGUI"
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false -- Không bị mất khi người chơi chết
 
+-- Cấu hình MainFrame (GUI chính)
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 MainFrame.BorderSizePixel = 0
-MainFrame.Size = UDim2.new(0, 200, 0, 100)
-MainFrame.Position = UDim2.new(0.5, -100, 0.5, -50)
+MainFrame.Size = UDim2.new(0, 220, 0, 120)
+MainFrame.Position = UDim2.new(0.5, -110, 0.5, -60)
+MainFrame.Visible = true
 
+-- Làm tròn MainFrame
+UICorner.Parent = MainFrame
+UICorner.CornerRadius = UDim.new(0, 10) -- Bo tròn góc 10px
+
+-- Cấu hình ToggleButton (Nút bật/tắt GUI chính)
 ToggleButton.Name = "ToggleButton"
 ToggleButton.Parent = ScreenGui
-ToggleButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-ToggleButton.BorderSizePixel = 0
-ToggleButton.Size = UDim2.new(0, 100, 0, 50)
-ToggleButton.Position = UDim2.new(0, 10, 0, 10)
-ToggleButton.Text = "Toggle GUI"
+ToggleButton.BackgroundTransparency = 1 -- Trong suốt nền
+ToggleButton.Size = UDim2.new(0, 60, 0, 60)
+ToggleButton.Position = UDim2.new(0, 20, 0, 20)
+ToggleButton.Image = "rbxassetid://82145301120414" -- Thay thế bằng ID ảnh của bạn
+ToggleButton.ScaleType = Enum.ScaleType.Fit
 
-ActivateButton.Name = "ActivateButton"
+-- Làm tròn ToggleButton
+local ToggleUICorner = Instance.new("UICorner", ToggleButton)
+ToggleUICorner.CornerRadius = UDim.new(1, 0) -- Làm tròn hoàn toàn
+
+-- Cấu hình ActivateButton (Nút bật/tắt tự động)
+ActivateButton.Name = "Collect Box"
 ActivateButton.Parent = MainFrame
 ActivateButton.BackgroundColor3 = Color3.fromRGB(70, 200, 70)
 ActivateButton.BorderSizePixel = 0
-ActivateButton.Size = UDim2.new(0, 180, 0, 50)
-ActivateButton.Position = UDim2.new(0, 10, 0, 25)
-ActivateButton.Text = "Activate Auto"
+ActivateButton.Size = UDim2.new(0, 200, 0, 50)
+ActivateButton.Position = UDim2.new(0, 10, 0, 35)
+ActivateButton.Text = "NO Collect Box"
+ActivateButton.Font = Enum.Font.GothamBold
+ActivateButton.TextSize = 16
+ActivateButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+-- Làm tròn ActivateButton
+local ActivateUICorner = Instance.new("UICorner", ActivateButton)
+ActivateUICorner.CornerRadius = UDim.new(0, 10)
 
 -- Biến trạng thái
 local autoActive = false
@@ -84,9 +105,13 @@ local function autoTeleportAndClick()
     while autoActive do
         local currentBox = boxes[currentIndex]
 
-        -- Teleport
-        if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = currentBox.CFrame + Vector3.new(0, 3, 0)
+        -- Kiểm tra nhân vật và teleport
+        local player = game.Players.LocalPlayer
+        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local humanoidRootPart = player.Character.HumanoidRootPart
+            humanoidRootPart.CFrame = currentBox.CFrame + Vector3.new(0, 3, 0)
+        else
+            warn("Character or HumanoidRootPart not found. Skipping teleport.")
         end
 
         -- Click hoặc kích hoạt
@@ -103,7 +128,7 @@ ActivateButton.MouseButton1Click:Connect(function()
     autoActive = not autoActive
     if autoActive then
         ActivateButton.Text = "Deactivate Auto"
-        autoTeleportAndClick()
+        coroutine.wrap(autoTeleportAndClick)()
     else
         ActivateButton.Text = "Activate Auto"
     end
