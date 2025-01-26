@@ -1,5 +1,6 @@
 -- Chức năng Auto Teleport và Click với Tween
 local TweenService = game:GetService("TweenService")
+local autoActive = true  -- Thêm biến autoActive để tránh lỗi
 
 local function autoTeleportAndClick()
     local boxes = {}
