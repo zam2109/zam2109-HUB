@@ -2,6 +2,42 @@
 local TweenService = game:GetService("TweenService")
 local autoActive = true  -- Thêm biến autoActive để tránh lỗi
 
+-- Tạo GUI
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local ActivateButton = Instance.new("TextButton")
+
+ScreenGui.Name = "AutoTeleportGUI"
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+MainFrame.Size = UDim2.new(0, 240, 0, 100)
+MainFrame.Position = UDim2.new(0.5, -120, 0.5, -50)
+
+ActivateButton.Name = "ActivateButton"
+ActivateButton.Parent = MainFrame
+ActivateButton.BackgroundColor3 = Color3.fromRGB(70, 200, 70)
+ActivateButton.Size = UDim2.new(0, 200, 0, 50)
+ActivateButton.Position = UDim2.new(0, 20, 0, 25)
+ActivateButton.Text = "Start Auto Teleport"
+ActivateButton.Font = Enum.Font.GothamBold
+ActivateButton.TextSize = 16
+ActivateButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+ActivateButton.MouseButton1Click:Connect(function()
+    autoActive = not autoActive
+    if autoActive then
+        ActivateButton.Text = "Stop Auto Teleport"
+        ActivateButton.BackgroundColor3 = Color3.fromRGB(200, 70, 70)
+        autoTeleportAndClick()
+    else
+        ActivateButton.Text = "Start Auto Teleport"
+        ActivateButton.BackgroundColor3 = Color3.fromRGB(70, 200, 70)
+    end
+end)
+
 local function autoTeleportAndClick()
     local boxes = {}
     for _, obj in pairs(workspace:GetDescendants()) do
