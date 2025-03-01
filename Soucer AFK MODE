@@ -1,0 +1,10 @@
+local MF = game:GetService("VirtualUser")
+    game:GetService("Players").LocalPlayer.Idled:Connect(function()
+        MF:CaptureController()
+        MF:ClickButton2(Vector2.new())
+    end)
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "zam2109 HUB",
+        Text = "Chế độ AFK đã bật!",
+        Duration = 500
+    })
