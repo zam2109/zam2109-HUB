@@ -63,12 +63,24 @@ tab:AddButton({
     callback = function()
 getgenv().morph = true
 loadstring(game:HttpGet("https://raw.githubusercontent.com/skibiditoiletfan2007/BaldyToSorcerer/refs/heads/main/LatestV2.lua"))()
+end
 getgenv().speedtools = true
 getgenv().speedpunch= true 
 getgenv().dance= true
 getgenv().night= true
 
 loadstring(game:HttpGet('https://raw.githubusercontent.com/Kenjihin69/Kenjihin69/refs/heads/main/Shinji%20tp%20exploit'))()
+})
+
+tab:AddButton({
+    text = "Cam Lock GUI ( ACE HUB )",
+    callback = function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Totocoems/Ace/main/Ace"))()
+})
+tab:AddButton({
+    text = "Teleport Player GUI",
+    callback = function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Toolbox231/Toolbox231/refs/heads/main/xz.txt"))()
 })
 -- Thêm Label "Information"
 tab:AddLabel({
