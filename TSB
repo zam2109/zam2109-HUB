@@ -1,0 +1,95 @@
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/liebertsx/Tora-Library/main/src/librarynew", true))()
+local tab = library:CreateWindow("zam2109 HUB")
+
+-- Kiểm tra nếu người chơi trong danh sách cấm
+if table.find({"Vzozz1", "Darklounger", "XDARKX_XP", "Jzyrelalways", "Doggoswer"}, game.Players.LocalPlayer.Name) then 
+    game.Players.LocalPlayer:Kick() 
+end
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+local autoCollect = false
+
+-- Hàm teleport đến Orb
+local function teleportToOrb(orb)
+    if orb and orb:IsA("BasePart") and orb.Name == "Orb" then
+        humanoidRootPart.CFrame = orb.CFrame + Vector3.new(0, 3, 0) -- Dịch lên để tránh lỗi va chạm
+        print("Teleported to Orb:", orb.Name)
+        task.wait(0.2) -- Giảm delay để teleport nhanh hơn
+    end
+end
+
+-- Toggle Auto Collect Point
+tab:AddButton({
+    text = "Teleport Rubbish",
+    callback = function()
+-- Lấy player và character
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local rootPart = character:WaitForChild("HumanoidRootPart")
+
+-- Tìm folder chứa Trashcan
+local trashFolder = workspace:WaitForChild("Map"):WaitForChild("Trash")
+
+-- Biến lưu các model đã teleport
+_G.teleportedTrashcans = _G.teleportedTrashcans or {}
+
+-- Khoảng cách bên cạnh (đơn vị)
+local sideOffset = 5 -- bạn chỉnh bao nhiêu cũng được
+
+-- Hàm teleport
+local function teleportToTrashcan()
+    for _, model in ipairs(trashFolder:GetChildren()) do
+        if not _G.teleportedTrashcans[model] then
+            local meshPart = model:FindFirstChildWhichIsA("MeshPart")
+            if meshPart then
+                -- Tính vị trí bên cạnh MeshPart
+                local rightVector = meshPart.CFrame.RightVector -- hướng bên phải của MeshPart
+                local offsetPosition = meshPart.Position + (rightVector * sideOffset) + Vector3.new(0, 5, 0)
+                
+                -- Teleport tới vị trí offset
+                rootPart.CFrame = CFrame.new(offsetPosition, meshPart.Position) -- quay mặt về MeshPart
+                _G.teleportedTrashcans[model] = true
+                print("Đã teleport cạnh:", model.Name)
+                return
+            end
+        end
+    end
+
+    -- Nếu đã teleport hết, reset lại
+    print("Đã đi hết tất cả Trashcan, reset lại danh sách!")
+    _G.teleportedTrashcans = {}
+    teleportToTrashcan() -- gọi lại để teleport từ đầu
+end
+
+-- Gọi hàm
+teleportToTrashcan()
+})
+-- Thêm Label "Information"
+tab:AddLabel({
+    text = "Information",
+    type = "label"
+})
+
+tab:AddButton({
+    text = "Copy Discord",
+    callback = function()
+        setclipboard("https://discord.gg/3f6SUbGneC")
+    end
+})
+
+tab:AddButton({
+    text = "Copy link Shop",
+    callback = function()
+        setclipboard("https://urlvn.net/zvuq63y")
+    end
+})
+
+tab:AddLabel({
+    text = "Credit: zam2109 Roblox",
+    type = "label"
+})
+
+library:Init()
