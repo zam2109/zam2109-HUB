@@ -12,21 +12,6 @@ if table.find({"Vzozz1", "Darklounger", "XDARKX_XP", "Jzyrelalways", "Doggoswer"
     game.Players.LocalPlayer:Kick() 
 end
 
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-
-local autoCollect = false
-
--- Hàm teleport đến Orb
-local function teleportToOrb(orb)
-    if orb and orb:IsA("BasePart") and orb.Name == "Orb" then
-        humanoidRootPart.CFrame = orb.CFrame + Vector3.new(0, 3, 0) -- Dịch lên để tránh lỗi va chạm
-        print("Teleported to Orb:", orb.Name)
-        task.wait(0.2) -- Giảm delay để teleport nhanh hơn
-    end
-end
-
 -- Toggle Auto Collect Point
 tab:AddButton({
     text = "Teleport Rubbish",
