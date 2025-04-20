@@ -1,3 +1,9 @@
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "Chào mừng đến vơi zam2109 HUB loại TSB", 
+    Text = "Chúc bạn có một trải nghiệm zui ze", 
+    Duration = 500
+})
+
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/liebertsx/Tora-Library/main/src/librarynew", true))()
 local tab = library:CreateWindow("zam2109 HUB")
 
