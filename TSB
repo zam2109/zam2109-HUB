@@ -72,6 +72,12 @@ tab:AddButton({
     callback = function()
 getgenv().morph = true
 loadstring(game:HttpGet("https://raw.githubusercontent.com/skibiditoiletfan2007/BaldyToSorcerer/refs/heads/main/LatestV2.lua"))()
+getgenv().speedtools = true
+getgenv().speedpunch= true 
+getgenv().dance= true
+getgenv().night= true
+
+loadstring(game:HttpGet('https://raw.githubusercontent.com/Kenjihin69/Kenjihin69/refs/heads/main/Shinji%20tp%20exploit'))()
 })
 -- Thêm Label "Information"
 tab:AddLabel({
