@@ -119,10 +119,5 @@ tab:AddLabel({
     type = "label"
 })
 
-library:Init()
-
-    text = "Credit: zam2109 Roblox",
-    type = "label"
-})
 
 library:Init()
