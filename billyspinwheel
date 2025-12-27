@@ -1,0 +1,128 @@
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "Chào mừng đến với zam2109 HUB loại TSB", 
+    Text = "Chúc bạn có một trải nghiệm zui ze", 
+    Duration = 5
+})
+
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/liebertsx/Tora-Library/main/src/librarynew", true))()
+local tab = library:CreateWindow("zam2109 HUB")
+
+-- Kiểm tra nếu người chơi trong danh sách cấm
+if table.find({"Vzozz1", "Darklounger", "XDARKX_XP", "Jzyrelalways", "Doggoswer"}, game.Players.LocalPlayer.Name) then 
+    game.Players.LocalPlayer:Kick() 
+end
+
+-- Teleport Rubbish
+tab:AddButton({
+    text = "Teleport Rubbish",
+    callback = function()
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+-- Thư mục chứa Gift
+local spawnedGiftsFolder = workspace:WaitForChild("Spawned Gifts")
+
+-- Bảng lưu các Gift đã thu thập
+local collectedGifts = {}
+
+-- Hàm tìm tất cả các Gift trong thư mục Spawned Gifts
+local function findAllGifts()
+    local gifts = {}
+    for _, obj in pairs(spawnedGiftsFolder:GetChildren()) do
+        if obj.Name == "Gift" and obj.Material == Enum.Material.Plastic then
+            table.insert(gifts, obj)
+        end
+    end
+    return gifts
+end
+
+-- Hàm teleport và thu thập Gift
+local function collectGift(gift)
+    -- Kiểm tra đã thu thập chưa
+    if collectedGifts[gift] then
+        return false
+    end
+    
+    -- Teleport đến Gift (offset lên trên 3 studs)
+    humanoidRootPart.CFrame = gift.CFrame * CFrame.new(0, 3, 0)
+    wait(0.5)
+    
+    -- Tìm và kích hoạt ProximityPrompt
+    local proximityPrompt = gift:FindFirstChildOfClass("ProximityPrompt")
+    if proximityPrompt then
+        fireproximityprompt(proximityPrompt)
+        wait(0.3)
+    end
+    
+    -- Đánh dấu đã thu thập
+    collectedGifts[gift] = true
+    print("✓ Đã thu thập Gift: " .. gift.Name)
+    return true
+end
+
+-- Vòng lặp chính
+print("Bắt đầu thu thập Gift...")
+while true do
+    local gifts = findAllGifts()
+    local collected = false
+    
+    for _, gift in pairs(gifts) do
+        if not collectedGifts[gift] then
+            local success = collectGift(gift)
+            if success then
+                collected = true
+                wait(1)
+            end
+        end
+    end
+    
+    -- Nếu đã thu thập hết, reset bảng
+    if not collected then
+        print("Đã thu thập hết Gift! Bắt đầu lại sau 2 giây...")
+        collectedGifts = {}
+        wait(2)
+    end
+    
+    wait(0.5)
+end
+    end
+})
+
+
+-- Thêm Label "Information"
+tab:AddLabel({
+    text = "Information",
+    type = "label"
+})
+
+-- Copy Discord
+tab:AddButton({
+    text = "Copy Discord",
+    callback = function()
+        setclipboard("https://discord.gg/3f6SUbGneC")
+    end
+})
+
+-- Copy Link Shop
+tab:AddButton({
+    text = "Copy link Shop",
+    callback = function()
+        setclipboard("https://urlvn.net/zvuq63y")
+    end
+})
+
+-- Credit
+tab:AddLabel({
+    text = "Credit: zam2109 Roblox",
+    type = "label"
+})
+
+library:Init()
+
+    text = "Credit: zam2109 Roblox",
+    type = "label"
+})
+
+library:Init()
