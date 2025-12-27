@@ -1,25 +1,90 @@
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "Chào mừng đến với zam2109 HUB loại TSB", 
-    Text = "Chúc bạn có một trải nghiệm zui ze", 
-    Duration = 5
-})
-
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/liebertsx/Tora-Library/main/src/librarynew", true))()
-local tab = library:CreateWindow("zam2109 HUB")
-
--- Kiểm tra nếu người chơi trong danh sách cấm
-if table.find({"Vzozz1", "Darklounger", "XDARKX_XP", "Jzyrelalways", "Doggoswer"}, game.Players.LocalPlayer.Name) then 
-    game.Players.LocalPlayer:Kick() 
-end
-
--- Teleport Rubbish
-tab:AddButton({
-    text = "Collect Gift",
-    callback = function()
 local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+-- Tạo GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "GiftCollectorGui"
+screenGui.Parent = player:WaitForChild("PlayerGui")
+screenGui.ResetOnSpawn = false
+
+-- Frame chính (có thể kéo)
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 300, 0, 120)
+mainFrame.Position = UDim2.new(0.5, -150, 0.1, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+-- Bo góc
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = mainFrame
+
+-- Header (để kéo)
+local header = Instance.new("Frame")
+header.Size = UDim2.new(1, 0, 0, 35)
+header.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+header.BorderSizePixel = 0
+header.Parent = mainFrame
+
+local headerCorner = Instance.new("UICorner")
+headerCorner.CornerRadius = UDim.new(0, 10)
+headerCorner.Parent = header
+
+-- Text trạng thái
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, -20, 0, 30)
+statusLabel.Position = UDim2.new(0, 10, 0, 45)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "Đang thu thập Gift..."
+statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+statusLabel.TextSize = 18
+statusLabel.Font = Enum.Font.GothamBold
+statusLabel.TextXAlignment = Enum.TextXAlignment.Left
+statusLabel.Parent = mainFrame
+
+-- Text credit
+local creditLabel = Instance.new("TextLabel")
+creditLabel.Size = UDim2.new(1, -20, 0, 25)
+creditLabel.Position = UDim2.new(0, 10, 0, 80)
+creditLabel.BackgroundTransparency = 1
+creditLabel.Text = "made by zam2109shop.com"
+creditLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+creditLabel.TextSize = 14
+creditLabel.Font = Enum.Font.Gotham
+creditLabel.TextXAlignment = Enum.TextXAlignment.Left
+creditLabel.Parent = mainFrame
+
+-- Hàm kéo GUI
+local dragging = false
+local dragInput, mousePos, framePos
+
+header.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        mousePos = input.Position
+        framePos = mainFrame.Position
+    end
+end)
+
+header.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - mousePos
+        mainFrame.Position = UDim2.new(
+            framePos.X.Scale, framePos.X.Offset + delta.X,
+            framePos.Y.Scale, framePos.Y.Offset + delta.Y
+        )
+    end
+end)
 
 -- Thư mục chứa Gift
 local spawnedGiftsFolder = workspace:WaitForChild("Spawned Gifts")
@@ -40,30 +105,28 @@ end
 
 -- Hàm teleport và thu thập Gift
 local function collectGift(gift)
-    -- Kiểm tra đã thu thập chưa
     if collectedGifts[gift] then
         return false
     end
     
-    -- Teleport đến Gift (offset lên trên 3 studs)
     humanoidRootPart.CFrame = gift.CFrame * CFrame.new(0, 3, 0)
     wait(0.5)
     
-    -- Tìm và kích hoạt ProximityPrompt
     local proximityPrompt = gift:FindFirstChildOfClass("ProximityPrompt")
     if proximityPrompt then
         fireproximityprompt(proximityPrompt)
         wait(0.3)
     end
     
-    -- Đánh dấu đã thu thập
     collectedGifts[gift] = true
-    print("✓ Đã thu thập Gift: " .. gift.Name)
+    statusLabel.Text = "✓ Đã thu thập: " .. gift.Name
     return true
 end
 
 -- Vòng lặp chính
 print("Bắt đầu thu thập Gift...")
+statusLabel.Text = "Đang quét Gift..."
+
 while true do
     local gifts = findAllGifts()
     local collected = false
@@ -78,47 +141,12 @@ while true do
         end
     end
     
-    -- Nếu đã thu thập hết, reset bảng
     if not collected then
-        print("Đã thu thập hết Gift! Bắt đầu lại sau 2 giây...")
+        statusLabel.Text = "Đã thu thập hết! Reset sau 2s..."
         collectedGifts = {}
         wait(2)
+        statusLabel.Text = "Đang quét Gift..."
     end
     
     wait(0.5)
 end
-end
-
-})
-
-
--- Thêm Label "Information"
-tab:AddLabel({
-    text = "Information",
-    type = "label"
-})
-
--- Copy Discord
-tab:AddButton({
-    text = "Copy Discord",
-    callback = function()
-        setclipboard("https://discord.gg/3f6SUbGneC")
-    end
-})
-
--- Copy Link Shop
-tab:AddButton({
-    text = "Copy link Shop",
-    callback = function()
-        setclipboard("https://urlvn.net/zvuq63y")
-    end
-})
-
--- Credit
-tab:AddLabel({
-    text = "Credit: zam2109 Roblox",
-    type = "label"
-})
-
-
-library:Init()
