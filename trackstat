@@ -1,0 +1,907 @@
+-- TrackStats combined template: loader settings + main tracker
+-- Template values below are filled by the website before copy.
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+-- 1. Xác định vị trí lưu trữ GUI an toàn
+local targetParent
+local success, _ = pcall(function()
+    local _ = CoreGui.Name
+    targetParent = CoreGui
+end)
+
+if not success or not targetParent then
+    targetParent = Players.LocalPlayer and Players.LocalPlayer:FindFirstChild("PlayerGui") or game:GetService("StarterGui")
+end
+
+if targetParent:FindFirstChild("ZM_BeautifulWelcomeGui") then
+    targetParent["ZM_BeautifulWelcomeGui"]:Destroy()
+end
+
+-- 2. Khởi tạo ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ZM_BeautifulWelcomeGui"
+screenGui.ResetOnSpawn = false
+screenGui.DisplayOrder = 100
+screenGui.Parent = targetParent
+
+-- 3. Tạo nền gradient mờ (glassmorphism backdrop)
+local backdrop = Instance.new("Frame")
+backdrop.Size = UDim2.new(1, 0, 1, 0)
+backdrop.BackgroundColor3 = Color3.fromRGB(10, 10, 18)
+backdrop.BackgroundTransparency = 0.7
+backdrop.Parent = screenGui
+
+local backdropCorner = Instance.new("UICorner")
+backdropCorner.CornerRadius = UDim.new(0, 0)
+backdropCorner.Parent = backdrop
+
+-- 4. Khung chính
+local mainFrame = Instance.new("CanvasGroup")
+local frameWidth, frameHeight = 480, 320
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, frameWidth, 0, frameHeight)
+mainFrame.Position = UDim2.new(0.5, -frameWidth/2, 0.5, -frameHeight/2)
+mainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 30)
+mainFrame.GroupTransparency = 1
+mainFrame.Parent = screenGui
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 20)
+mainCorner.Parent = mainFrame
+
+-- Viền neon
+local stroke1 = Instance.new("UIStroke")
+stroke1.Color = Color3.fromRGB(0, 220, 255)
+stroke1.Thickness = 3
+stroke1.Transparency = 0.3
+stroke1.Parent = mainFrame
+
+local stroke2 = Instance.new("UIStroke")
+stroke2.Color = Color3.fromRGB(180, 0, 255)
+stroke2.Thickness = 2
+stroke2.Transparency = 0.5
+stroke2.Parent = mainFrame
+
+-- Hiệu ứng glow bên trong
+local innerGlow = Instance.new("Frame")
+innerGlow.Size = UDim2.new(1, 0, 1, 0)
+innerGlow.BackgroundColor3 = Color3.fromRGB(0, 220, 255)
+innerGlow.BackgroundTransparency = 0.95
+innerGlow.BorderSizePixel = 0
+innerGlow.Parent = mainFrame
+
+local innerGlowCorner = Instance.new("UICorner")
+innerGlowCorner.CornerRadius = UDim.new(0, 20)
+innerGlowCorner.Parent = innerGlow
+
+-- 5. Thanh tiêu đề
+local header = Instance.new("Frame")
+header.Size = UDim2.new(1, 0, 0, 60)
+header.BackgroundColor3 = Color3.fromRGB(25, 25, 42)
+header.BackgroundTransparency = 0.7
+header.BorderSizePixel = 0
+header.Parent = mainFrame
+
+local headerCorner = Instance.new("UICorner")
+headerCorner.CornerRadius = UDim.new(0, 20)  -- ✅ ĐÃ SỬA: loại bỏ tham số thừa
+headerCorner.Parent = header
+
+local headerLine = Instance.new("Frame")
+headerLine.Size = UDim2.new(1, -40, 0, 3)
+headerLine.Position = UDim2.new(0, 20, 0, 55)
+headerLine.BackgroundColor3 = Color3.fromRGB(0, 220, 255)
+headerLine.BorderSizePixel = 0
+headerLine.Parent = header
+
+local headerLineStroke = Instance.new("UIStroke")
+headerLineStroke.Color = Color3.fromRGB(180, 0, 255)
+headerLineStroke.Thickness = 1
+headerLineStroke.Parent = headerLine
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -40, 0, 40)
+title.Position = UDim2.new(0, 20, 0, 10)
+title.Text = "⚡ ZM  Clone Tab  ⚡ "
+title.TextColor3 = Color3.fromRGB(0, 255, 255)
+title.TextSize = 22
+title.Font = Enum.Font.GothamBlack
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.BackgroundTransparency = 1
+title.TextStrokeTransparency = 0.5
+title.TextStrokeColor3 = Color3.fromRGB(180, 0, 255)
+title.Parent = header
+
+-- 6. Khu vực nội dung
+local contentArea = Instance.new("Frame")
+contentArea.Size = UDim2.new(1, -30, 1, -120)
+contentArea.Position = UDim2.new(0, 15, 0, 75)
+contentArea.BackgroundColor3 = Color3.fromRGB(25, 25, 42)
+contentArea.BackgroundTransparency = 0.7
+contentArea.BorderSizePixel = 0
+contentArea.Parent = mainFrame
+
+local contentCorner = Instance.new("UICorner")
+contentCorner.CornerRadius = UDim.new(0, 15)
+contentCorner.Parent = contentArea
+
+local layout = Instance.new("UIListLayout")
+layout.Padding = UDim.new(0, 10)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+layout.Parent = contentArea
+
+local infoLines = {
+    {text = "✨ Made by ZM Clone Tab", color = Color3.fromRGB(255, 215, 0), icon = "👑"},
+    {text = "💬 Discord: discord.gg/3f6SUbGneC", color = Color3.fromRGB(114, 137, 218), icon = "💎"},
+    {text = "🛒 Shop Ugphone: zam2109shop.vn", color = Color3.fromRGB(0, 255, 127), icon = "📱"},
+    {text = "☁️ Shop Redfinger/Vmos/Vsphone: taphoacloud.vn", color = Color3.fromRGB(255, 100, 150), icon = "🎮"}
+}
+
+local createdLabels = {}
+
+for i, info in ipairs(infoLines) do
+    local row = Instance.new("Frame")
+    row.Size = UDim2.new(1, 0, 0, 45)
+    row.BackgroundColor3 = Color3.fromRGB(32, 32, 50)
+    row.BackgroundTransparency = 1
+    row.BorderSizePixel = 0
+    row.Parent = contentArea
+    
+    local rowCorner = Instance.new("UICorner")
+    rowCorner.CornerRadius = UDim.new(0, 12)
+    rowCorner.Parent = row
+    
+    local rowStroke = Instance.new("UIStroke")
+    rowStroke.Color = info.color
+    rowStroke.Thickness = 1.5
+    rowStroke.Transparency = 0.6
+    rowStroke.Parent = row
+    
+    local iconLabel = Instance.new("TextLabel")
+    iconLabel.Size = UDim2.new(0, 30, 1, 0)
+    iconLabel.Position = UDim2.new(0, 12, 0, 0)
+    iconLabel.Text = info.icon
+    iconLabel.TextSize = 20
+    iconLabel.Font = Enum.Font.SourceSans
+    iconLabel.BackgroundTransparency = 1
+    iconLabel.Parent = row
+    
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(1, -50, 1, 0)
+    lbl.Position = UDim2.new(0, 45, 0, 0)
+    lbl.Text = info.text
+    lbl.TextColor3 = info.color
+    lbl.TextSize = 14
+    lbl.Font = Enum.Font.GothamSemibold
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.BackgroundTransparency = 1
+    lbl.TextStrokeTransparency = 0.7
+    lbl.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
+    lbl.Parent = row
+    
+    table.insert(createdLabels, {row = row, color = info.color})
+end
+
+-- 7. Dòng thanks
+local thanksContainer = Instance.new("Frame")
+thanksContainer.Size = UDim2.new(1, 0, 0, 35)
+thanksContainer.Position = UDim2.new(0, 0, 1, -35)
+thanksContainer.BackgroundTransparency = 1
+thanksContainer.Parent = mainFrame
+
+local thanks = Instance.new("TextLabel")
+thanks.Size = UDim2.new(1, -30, 1, 0)
+thanks.Position = UDim2.new(0, 15, 0, 0)
+thanks.Text = "🎉 Cảm ơn bạn đã sử dụng dịch vụ! Bảng sẽ tự ẩn sau 5s..."
+thanks.TextColor3 = Color3.fromRGB(180, 180, 200)
+thanks.TextSize = 13
+thanks.Font = Enum.Font.Gotham
+thanks.BackgroundTransparency = 1
+thanks.TextTransparency = 1
+thanks.TextXAlignment = Enum.TextXAlignment.Center
+thanks.Parent = thanksContainer
+
+-- ==================== ANIMATION SỬA RỒI ====================
+
+local isPlaying = RunService:IsRunning()
+local startPos = UDim2.new(0.5, -frameWidth/2, 0.5, -frameHeight/2 + 100)
+local targetPos = UDim2.new(0.5, -frameWidth/2, 0.5, -frameHeight/2)
+local hidePos = UDim2.new(0.5, -frameWidth/2, 0.5, -frameHeight/2 - 100)
+
+if isPlaying then
+    -- Bắt đầu từ dưới + trong suốt
+    mainFrame.Position = startPos
+    mainFrame.GroupTransparency = 1
+    
+    -- Animation hiện frame chính
+    local tweenIn = TweenService:Create(mainFrame, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        GroupTransparency = 0,
+        Position = targetPos
+    })
+    tweenIn:Play()
+    
+    -- Animation stagger cho từng dòng
+    for i, item in ipairs(createdLabels) do
+        task.wait(0.12 * i)
+        
+        local rowTween = TweenService:Create(item.row, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            BackgroundTransparency = 0.5
+        })
+        rowTween:Play()
+    end
+    
+    -- Hiện dòng thanks
+    local thanksTween = TweenService:Create(thanks, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        TextTransparency = 0
+    })
+    thanksTween:Play()
+    
+else
+    -- Edit mode: hiện thẳng luôn
+    mainFrame.Position = targetPos
+    mainFrame.GroupTransparency = 0
+    
+    for _, item in ipairs(createdLabels) do
+        item.row.BackgroundTransparency = 0.5
+    end
+    
+    thanks.TextTransparency = 0
+end
+
+-- Tự ẩn SAU 5 GIÂY với animation
+task.wait(6)
+
+if isPlaying then
+    -- Ẩn từng dòng trước
+    for i = #createdLabels, 1, -1 do
+        local item = createdLabels[i]
+        local tweenOut = TweenService:Create(item.row, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+            BackgroundTransparency = 1
+        })
+        tweenOut:Play()
+        task.wait(0.05)
+    end
+    
+    task.wait(0.3)
+    
+    -- Ẩn frame chính滑 lên trên
+    local tweenOut = TweenService:Create(mainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+        GroupTransparency = 1,
+        Position = hidePos
+    })
+    tweenOut:Play()
+    
+    tweenOut.Completed:Connect(function()
+        screenGui:Destroy()
+        print("✨ GUI đã tự động.destroy() sau 5s")
+    end)
+else
+    -- Edit mode: xóa thẳng
+    screenGui:Destroy()
+    print("✨ GUI đã destroy trong Edit mode")
+end
+
+-- Vòng lặp quảng cáo
+_G.ZM_AdSessionID = (_G.ZM_AdSessionID or 0) + 1
+local mySession = _G.ZM_AdSessionID
+
+task.spawn(function()
+    local index = 1
+    print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    print("🎉 [ZM MEGA WELCOME] Script giao diện đẹp đã kích hoạt!")
+    print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    
+    while _G.ZM_AdSessionID == mySession do
+        local currentLine = infoLines[index].text
+        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        print("💎 Cảm ơn bạn đã sử dụng script! | " .. currentLine)
+        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        
+        index = index % #infoLines + 1
+        task.wait(30)
+    end
+end)
+
+
+-- Main tracker
+local API_BASE_URL = "https://trackstat.zam2109shop.vn/api"
+local VERSION = "1.1.0"
+local INTERVAL = 30
+local TIMEOUT = 15
+local LOAD_TIMEOUT = 60
+local INITIAL_COLLECT_TIMEOUT = 60
+local INITIAL_RETRY_DELAY = 2
+local KEY_MIN_LENGTH = 12
+local KEY_MAX_LENGTH = 64
+local NAME_MAX_LENGTH = 32
+local STAGGER_MAX_MS = 5000
+local MAX_ROWS = 20000
+local MAX_BYTES = 1000000
+local FIELDS = {"Level", "Beli", "Fragments", "Bounty", "Sea", "Melee", "Swords", "Guns", "FruitInventory", "Accessories", "Device", "Executor"}
+local INVENTORIES = {"Melee", "Swords", "Guns", "FruitInventory", "Accessories"}
+local env = getgenv()
+local previous = env.Zam2109_Tracker
+if type(previous) == "table" and previous.Running then
+    return previous
+end
+local Tracker = {Running = true, Version = VERSION}
+env.Zam2109_Tracker = Tracker
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local HttpService = game:GetService("HttpService")
+local StarterGui = game:GetService("StarterGui")
+local settings, player, apiKey, requestFn, sessionId
+local debugEnabled = type(env.Zam2109_Settings) == "table" and env.Zam2109_Settings.Debug == true
+local logs, pending, modules = {}, {}, {}
+local notified, sequence, lastSuccess, lastHeartbeat, lastError = false, 0, nil, nil, nil
+local phase = "starting"
+
+local function clean(value)
+    local valueType = type(value)
+    local text = (valueType == "string" or valueType == "number") and tostring(value) or valueType
+    if type(apiKey) == "string" and #apiKey > 0 then
+        local pattern = apiKey:gsub("([^%w])", "%%%1")
+        text = text:gsub(pattern, "[REDACTED]")
+    end
+    return text:gsub("[%c]", " "):sub(1, 600)
+end
+
+local function log(code, detail)
+    if not debugEnabled then return end
+    local entry = {Time = os.time(), Phase = phase, Code = code, Detail = clean(detail or "")}
+    logs[#logs + 1] = entry
+    if #logs > 200 then table.remove(logs, 1) end
+    print("[Zam2109][" .. entry.Phase .. "][" .. code .. "] " .. entry.Detail)
+end
+
+local function fail(code, detail)
+    error({Code = code, Detail = detail or code}, 0)
+end
+
+local function capture(err)
+    local result = type(err) == "table" and err.Code and err or {Code = "UNEXPECTED", Detail = clean(err)}
+    if debugEnabled and debug and type(debug.traceback) == "function" then
+        log("TRACE", debug.traceback("", 2))
+    end
+    return result
+end
+
+local function notifyOnce(message)
+    if notified then return end
+    notified = true
+    for _ = 1, 10 do
+        local ok = pcall(function()
+            StarterGui:SetCore("SendNotification", {Title = "Zam2109", Text = message, Duration = 5})
+        end)
+        if ok then return end
+        task.wait(0.3)
+    end
+    warn("[Zam2109] " .. message)
+end
+
+local function messageFor(code)
+    if code == "INVALID_KEY" then return "Invalid API key." end
+    if code == "INVALID_SETTINGS" then return "Invalid tracker settings." end
+    if code == "API_NOT_CONFIGURED" then return "Tracker API is not configured." end
+    if code == "HTTP_UNAVAILABLE" then return "Executor HTTP is unavailable." end
+    if code == "API_SERVER" or code == "API_PROTOCOL" or code == "API_REJECTED" or code == "SESSION_EXPIRED" then
+        return "Failed to connect to server."
+    end
+    return "Failed to collect account data."
+end
+
+function Tracker.Stop()
+    Tracker.Running = false
+    phase = "stopped"
+end
+
+function Tracker.SetDebug(enabled)
+    debugEnabled = enabled == true
+end
+
+function Tracker.GetStatus()
+    return {Running = Tracker.Running, Phase = phase, Sequence = sequence, LastSuccess = lastSuccess, LastHeartbeat = lastHeartbeat, LastError = lastError, Version = VERSION}
+end
+
+function Tracker.GetDiagnostics()
+    local result = {}
+    for i, entry in ipairs(logs) do
+        result[i] = {Time = entry.Time, Phase = entry.Phase, Code = entry.Code, Detail = entry.Detail}
+    end
+    return result
+end
+
+local function checkRunning()
+    if not Tracker.Running then fail("STOPPED") end
+end
+
+local function bounded(name, seconds, fn)
+    checkRunning()
+    if pending[name] then fail("CALL_PENDING", name) end
+    local job = {Done = false}
+    pending[name] = job
+    local started = os.clock()
+    task.spawn(function()
+        job.Ok, job.Value = xpcall(fn, capture)
+        job.Done = true
+        if pending[name] == job then pending[name] = nil end
+    end)
+    while not job.Done do
+        checkRunning()
+        if os.clock() - started >= seconds then fail("CALL_TIMEOUT", name) end
+        task.wait(0.05)
+    end
+    checkRunning()
+    log("CALL", name .. " " .. math.floor((os.clock() - started) * 1000) .. "ms")
+    if not job.Ok then error(job.Value, 0) end
+    return job.Value
+end
+
+local function waitFor(name, fn)
+    local deadline = os.clock() + LOAD_TIMEOUT
+    repeat
+        checkRunning()
+        local result = fn()
+        if result then return result end
+        task.wait(0.25)
+    until os.clock() >= deadline
+    fail("DATA_NOT_READY", name)
+end
+
+local function moduleAt(path)
+    if modules[path] then return modules[path] end
+    local instance = ReplicatedStorage
+    for part in path:gmatch("[^/]+") do
+        instance = instance:FindFirstChild(part)
+        if not instance then fail("MODULE_MISSING", path) end
+    end
+    local value = bounded("require:" .. path, TIMEOUT, function() return require(instance) end)
+    if type(value) ~= "table" then fail("MODULE_SHAPE", path) end
+    modules[path] = value
+    return value
+end
+
+local function integer(value, name)
+    if type(value) ~= "number" or value ~= value or value < 0 or value > 9007199254740991 or value % 1 ~= 0 then
+        fail("INVALID_NUMBER", name)
+    end
+    return value
+end
+
+local function textValue(value, name, limit)
+    if type(value) ~= "string" or #value == 0 or #value > (limit or 256) or value:find("[%c]") then
+        fail("INVALID_TEXT", name)
+    end
+    return value
+end
+
+local function array(value, name)
+    if type(value) ~= "table" then fail("INVALID_ARRAY", name) end
+    local count = 0
+    for key in pairs(value) do
+        count = count + 1
+        if type(key) ~= "number" or key < 1 or key % 1 ~= 0 then fail("INVALID_ARRAY", name) end
+    end
+    if count ~= #value or count > MAX_ROWS then fail("INVALID_ARRAY", name) end
+    return value
+end
+
+local function has(list, value)
+    if type(list) ~= "table" then return false end
+    for _, item in ipairs(list) do if item == value then return true end end
+    return false
+end
+
+local function validate()
+    local raw = env.Zam2109_Settings
+    if type(raw) ~= "table" then fail("INVALID_SETTINGS", "Zam2109_Settings must be a table") end
+    apiKey = raw.key
+    if type(apiKey) ~= "string" or not apiKey:match("^[A-Za-z0-9]+$") or #apiKey < KEY_MIN_LENGTH or #apiKey > KEY_MAX_LENGTH then fail("INVALID_KEY", "key must be alphanumeric and 12-64 characters") end
+    if type(raw.Name) ~= "string" or not raw.Name:match("^[A-Za-z0-9]+$") or #raw.Name > NAME_MAX_LENGTH then fail("INVALID_SETTINGS", "Name must be alphanumeric and at most 32 characters") end
+    if type(raw.Config) ~= "table" then fail("INVALID_SETTINGS", "Config must be a table") end
+    if raw.Debug ~= nil and type(raw.Debug) ~= "boolean" then fail("INVALID_SETTINGS", "Debug must be boolean") end
+    settings = {Name = raw.Name, Config = {}}
+    local known = {}
+    for _, field in ipairs(FIELDS) do
+        known[field] = true
+        if type(raw.Config[field]) ~= "boolean" then fail("INVALID_SETTINGS", "Config." .. field .. " must be boolean") end
+        settings.Config[field] = raw.Config[field]
+    end
+    for key in pairs(raw.Config) do
+        if not known[key] then fail("INVALID_SETTINGS", "Unknown Config field: " .. tostring(key)) end
+    end
+    if not API_BASE_URL:match("^https://[%w%.%-]+[:%d]*/?[%w%-%._/]*$") or API_BASE_URL:find("YOUR%-TRACKER") then
+        fail("API_NOT_CONFIGURED")
+    end
+    local candidates = {env.request, env.http_request, request, http_request}
+    for _, name in ipairs({"syn", "http", "fluxus"}) do
+        local value = env[name]
+        if type(value) == "table" and type(value.request) == "function" then candidates[#candidates + 1] = value.request end
+    end
+    for _, fn in pairs(candidates) do
+        if type(fn) == "function" then
+            requestFn = fn
+            break
+        end
+    end
+    if not requestFn then fail("HTTP_UNAVAILABLE") end
+    log("SETTINGS_VALID", "Config copied; interval=30s")
+end
+
+local function api(path, payload)
+    local function encode(value, isArray)
+        if type(value) ~= "table" then return HttpService:JSONEncode(value) end
+        local parts = {}
+        if isArray then
+            for _, item in ipairs(value) do parts[#parts + 1] = encode(item, false) end
+            return "[" .. table.concat(parts, ",") .. "]"
+        end
+        local names = {}
+        for name in pairs(value) do names[#names + 1] = name end
+        table.sort(names)
+        for _, name in ipairs(names) do
+            parts[#parts + 1] = HttpService:JSONEncode(name) .. ":" .. encode(value[name], name == "Items")
+        end
+        return "{" .. table.concat(parts, ",") .. "}"
+    end
+    local encoded = encode(payload, false)
+    if #encoded > MAX_BYTES then fail("PAYLOAD_TOO_LARGE") end
+    local ok, response = xpcall(function()
+        return bounded("http", TIMEOUT, function()
+            return requestFn({Url = API_BASE_URL:gsub("/$", "") .. path, Method = "POST", Headers = {
+                ["Content-Type"] = "application/json", ["Accept"] = "application/json", ["Authorization"] = "Bearer " .. apiKey,
+            }, Body = encoded, Timeout = TIMEOUT, Redirect = false})
+        end)
+    end, capture)
+    if not ok then
+        if response.Code == "STOPPED" then error(response, 0) end
+        log(response.Code, response.Detail)
+        fail("API_SERVER", "HTTP transport unavailable or timed out")
+    end
+    if type(response) ~= "table" then fail("API_PROTOCOL", "No response table") end
+    local status = tonumber(response.StatusCode or response.Status)
+    log("HTTP_STATUS", path .. " " .. tostring(status))
+    if status == 401 or status == 403 then fail("INVALID_KEY", "Key rejected or revoked") end
+    if status == 409 then fail("SESSION_EXPIRED", "Session superseded") end
+    if status == 429 or (status and status >= 500) then fail("API_SERVER", "Server unavailable or rate limited") end
+    if not status or status < 200 or status >= 300 then fail("API_REJECTED", "Unexpected HTTP status") end
+    if type(response.Body) ~= "string" or #response.Body > MAX_BYTES then fail("API_PROTOCOL", "Invalid response body") end
+    local decodedOk, body = pcall(function() return HttpService:JSONDecode(response.Body) end)
+    if not decodedOk or type(body) ~= "table" or body.ok ~= true then fail("API_PROTOCOL", "Expected JSON ok=true") end
+    if path == "/v1/tracker/snapshots" and (body.sessionId ~= sessionId or body.sequence ~= sequence) then
+        fail("API_PROTOCOL", "Snapshot acknowledgement mismatch")
+    end
+    if path == "/v1/tracker/heartbeat" and body.sessionId ~= sessionId then
+        fail("API_PROTOCOL", "Heartbeat acknowledgement mismatch")
+    end
+    return body
+end
+
+local function remote(name, ...)
+    local args = table.pack(...)
+    local net = moduleAt("Modules/Net")
+    return bounded("remote:" .. name, TIMEOUT, function()
+        local target = net:RemoteFunction(name)
+        if not target or not target:IsA("RemoteFunction") then fail("REMOTE_MISSING", name) end
+        return target:InvokeServer(table.unpack(args, 1, args.n))
+    end)
+end
+
+local function category(config)
+    if type(config.Index) ~= "table" then fail("CATALOG_SHAPE", "Missing Index") end
+    if config.Index.IdType == "Moveset" and config.Moveset and config.Moveset.Type == "FightingStyle" then return "Melee" end
+    local brackets = config.Inventory and config.Inventory.Brackets
+    local groups = config.Inventory and config.Inventory.Groups
+    if has(groups, "Backpack") and has(brackets, "Swords") then return "Swords" end
+    if has(groups, "Backpack") and has(brackets, "Guns") then return "Guns" end
+    if has(brackets, "Fruits") and config.Index.IdType == "PhysicalMoveset" then return "FruitInventory" end
+    if has(brackets, "Accessories") and config.Index.IdType == "Accessory" then return "Accessories" end
+    return nil
+end
+
+local catalog, catalogById, refreshIds, keys
+local function prepareInventory()
+    catalog = moduleAt("ItemConfig")
+    keys = moduleAt("ItemReplicationService/KEYS")
+    catalogById, refreshIds = {}, {}
+    local counts = {}
+    for _, field in ipairs(INVENTORIES) do counts[field] = 0 end
+    for _, config in ipairs(array(catalog.dumpItems(), "ItemConfig.dumpItems")) do
+        local field = category(config)
+        if field and settings.Config[field] then
+            local id = integer(config.Index.ItemId, "ItemId")
+            if not catalogById[id] then
+                catalogById[id] = {Config = config, Field = field}
+                counts[field] = counts[field] + 1
+                if config.Index.IdType ~= "Accessory" then refreshIds[#refreshIds + 1] = id end
+            end
+        end
+    end
+    table.sort(refreshIds)
+    if #refreshIds > 1000 then fail("CATALOG_LIMIT", "Refresh would exceed budget") end
+    for _, field in ipairs(INVENTORIES) do
+        if settings.Config[field] then
+            log("CATALOG", field .. " candidates=" .. counts[field])
+            if counts[field] == 0 then fail("CATALOG_EMPTY", field) end
+        end
+    end
+    for _, key in ipairs({"QUANTITY", "IS_OWNED", "ACCESSORY_TYPE"}) do
+        if type(keys[key]) ~= "string" then fail("MODULE_SHAPE", "KEYS." .. key) end
+    end
+end
+
+local function inventorySnapshot()
+    local selected = {}
+    for _, field in ipairs(INVENTORIES) do
+        if settings.Config[field] then selected[field] = {Count = 0, Items = {}} end
+    end
+    if not next(selected) then return selected end
+    if not catalogById then prepareInventory() end
+    local records = {}
+    if #refreshIds > 0 then
+        local response = array(remote("ItemReplicationServiceRefreshAsync", refreshIds, nil, {keys.QUANTITY, keys.IS_OWNED}), "RefreshAsync")
+        if #response ~= #refreshIds then fail("INVENTORY_INCOMPLETE", "Refresh response count mismatch") end
+        local received = {}
+        for _, row in ipairs(response) do
+            if type(row) ~= "table" or not catalogById[row.ItemId] or row.UID ~= nil or type(row.Attributes) ~= "table" or received[row.ItemId] then
+                fail("INVENTORY_SHAPE", "Invalid refresh row")
+            end
+            received[row.ItemId] = true
+            records[tostring(row.ItemId)] = {ItemId = row.ItemId, Values = row.Attributes}
+        end
+        for _, id in ipairs(refreshIds) do if not received[id] then fail("INVENTORY_INCOMPLETE", "Missing refreshed ItemId") end end
+    end
+    if settings.Config.Accessories then
+        local rows = array(remote("GetAllItemValues"), "GetAllItemValues")
+        for _, row in ipairs(rows) do
+            if type(row) ~= "table" or type(row.ItemId) ~= "number" or type(row.Key) ~= "string" then fail("INVENTORY_SHAPE", "Invalid replication row") end
+            local entry = catalogById[row.ItemId]
+            if not entry and row.NetworkedUID and row.Key == keys.ACCESSORY_TYPE and row.Value == "Super" then
+                fail("CATALOG_MISSING", "Dynamic accessory ItemId " .. tostring(row.ItemId))
+            end
+            if entry and entry.Field == "Accessories" and entry.Config.Index.IdType == "Accessory" then
+                local uid = textValue(row.NetworkedUID, "NetworkedUID", 256)
+                local recordKey = tostring(row.ItemId) .. ":" .. uid
+                records[recordKey] = records[recordKey] or {ItemId = row.ItemId, NetworkedUID = uid, Values = {}}
+                if row.Key == keys.QUANTITY or row.Key == keys.IS_OWNED or row.Key == keys.ACCESSORY_TYPE then
+                    records[recordKey].Values[row.Key] = row.Value
+                end
+            end
+        end
+    end
+    for _, record in pairs(records) do
+        local entry = catalogById[record.ItemId]
+        local values = record.Values
+        local quantity, owned = values[keys.QUANTITY], values[keys.IS_OWNED]
+        if quantity ~= nil then integer(quantity, "Quantity") end
+        if owned ~= nil and type(owned) ~= "boolean" then fail("INVENTORY_SHAPE", "IsOwned must be boolean") end
+        local dynamic = entry.Config.Index.IdType == "Accessory"
+        if dynamic then
+            local accessoryType = values[keys.ACCESSORY_TYPE]
+            if accessoryType ~= nil and accessoryType ~= "Super" then fail("INVENTORY_SHAPE", "Unexpected accessory type in Accessories bracket") end
+            if accessoryType == "Super" then quantity = 1 end
+        elseif quantity == nil and owned == true and entry.Field ~= "FruitInventory" then
+            quantity = 1
+        end
+        if entry.Field == "FruitInventory" and owned == true and quantity == nil then fail("INVENTORY_INCOMPLETE", "Fruit quantity missing") end
+        if quantity and quantity > 0 then
+            local config = entry.Config
+            local storageKey = textValue(config.Index.StorageKey, "StorageKey")
+            local name = config.Display and config.Display.Name
+            if type(name) ~= "string" or #name == 0 then name = storageKey end
+            local item = {ItemId = record.ItemId, Name = textValue(name, "Item.Name"), StorageKey = storageKey, Quantity = quantity}
+            if record.NetworkedUID then item.NetworkedUID = record.NetworkedUID end
+            local group = selected[entry.Field]
+            group.Items[#group.Items + 1] = item
+            group.Count = group.Count + 1
+        end
+    end
+    for field, group in pairs(selected) do
+        table.sort(group.Items, function(a, b)
+            if a.ItemId == b.ItemId then return (a.NetworkedUID or "") < (b.NetworkedUID or "") end
+            return a.ItemId < b.ItemId
+        end)
+        if field == "Melee" and group.Count == 0 then fail("INVENTORY_INCOMPLETE", "No owned fighting style; verify ownership replication") end
+        log("COLLECT_OK", field .. " rows=" .. group.Count)
+    end
+    return selected
+end
+
+local function stat(parent, name)
+    local value = parent and parent:FindFirstChild(name)
+    if not value or not (value:IsA("IntValue") or value:IsA("NumberValue")) then fail("STAT_MISSING", name) end
+    return integer(value.Value, name)
+end
+
+local function device()
+    local ok, result = pcall(function()
+        local platform = game:GetService("UserInputService"):GetPlatform().Name
+        if platform == "Windows" or platform == "OSX" or platform == "Linux" or platform == "UWP" then return "PC" end
+        if platform == "IOS" or platform == "Android" then return "Mobile" end
+        if platform == "XBoxOne" or platform == "PS4" or platform == "PS5" then return "Console" end
+        return "Unknown"
+    end)
+    if ok and result ~= "Unknown" then return result end
+    log("DEVICE_FALLBACK", "Platform unavailable; trying game input classification")
+    local fallbackOk, input = xpcall(function() return moduleAt("Modules/LastInput"):Get() end, capture)
+    if fallbackOk then return ({MouseKeyboard = "PC", Touch = "Mobile", Gamepad = "Console"})[input] or "Unknown" end
+    return "Unknown"
+end
+
+local function executor()
+    for _, name in ipairs({"identifyexecutor", "getexecutorname"}) do
+        local fn = env[name]
+        if type(fn) == "function" then
+            local ok, result = pcall(fn)
+            if ok and type(result) == "string" and #result > 0 then return clean(result):sub(1, 128) end
+        end
+    end
+    return "Unknown"
+end
+
+local function collect()
+    if not player:FindFirstChild("DataLoaded") then fail("DATA_NOT_READY", "DataLoaded") end
+    local data = player:FindFirstChild("Data")
+    if not data then fail("DATA_NOT_READY", "Data") end
+    local snapshot = {}
+    for _, field in ipairs({"Level", "Beli", "Fragments"}) do
+        if settings.Config[field] then
+            snapshot[field] = stat(data, field)
+            log("COLLECT_OK", field)
+        end
+    end
+    if settings.Config.Bounty then snapshot.Bounty = stat(player:FindFirstChild("leaderstats"), "Bounty/Honor") end
+    if settings.Config.Sea then
+        local sea = bounded("sea", TIMEOUT, function() return moduleAt("Util/Realm").getCurrentSeaAsync() end)
+        local number = ({Sea1 = 1, Sea2 = 2, Sea3 = 3})[sea]
+        if not number then fail("SEA_UNKNOWN", "Realm did not identify a Sea") end
+        snapshot.Sea = number
+    end
+    for field, value in pairs(inventorySnapshot()) do snapshot[field] = value end
+    if settings.Config.Device then snapshot.Device = device() end
+    if settings.Config.Executor then snapshot.Executor = executor() end
+    return snapshot
+end
+
+local function heartbeat(status, errorCode)
+    phase = "heartbeat"
+    local payload = {
+        schemaVersion = 1, collectorVersion = VERSION, sessionId = sessionId,
+        Name = settings.Name, UserId = integer(player.UserId, "UserId"), Username = textValue(player.Name, "Username"),
+        observedAt = os.time(), intervalSeconds = INTERVAL, collectorStatus = status or "ok",
+    }
+    if errorCode then payload.collectorError = textValue(errorCode, "collectorError", 64) end
+    if settings.Config.Device then payload.Device = device() end
+    if settings.Config.Executor then payload.Executor = executor() end
+    api("/v1/tracker/heartbeat", payload)
+    lastHeartbeat = os.time()
+    log("HEARTBEAT_OK", payload.collectorStatus)
+    phase = "waiting"
+end
+
+local function syncSnapshot()
+    phase = "collecting"
+    local started = os.clock()
+    local snapshot = collect()
+    checkRunning()
+    sequence = sequence + 1
+    local payload = {
+        schemaVersion = 1, collectorVersion = VERSION, sessionId = sessionId, sequence = sequence,
+        Name = settings.Name, UserId = integer(player.UserId, "UserId"), Username = textValue(player.Name, "Username"),
+        observedAt = os.time(), collectionDurationMs = math.floor((os.clock() - started) * 1000), intervalSeconds = INTERVAL,
+        Config = settings.Config, Snapshot = snapshot,
+    }
+    phase = "uploading"
+    api("/v1/tracker/snapshots", payload)
+    lastSuccess = os.time()
+    lastHeartbeat = lastSuccess
+    lastError = nil
+    log("SYNC_OK", "sequence=" .. sequence)
+    phase = "waiting"
+end
+
+local function terminalApiError(code)
+    return code == "INVALID_KEY" or code == "SESSION_EXPIRED" or code == "API_REJECTED"
+end
+
+local function apiError(code)
+    return code == "INVALID_KEY" or code == "SESSION_EXPIRED" or code == "API_REJECTED" or code == "API_SERVER" or code == "API_PROTOCOL" or code == "HTTP_UNAVAILABLE" or code == "API_NOT_CONFIGURED"
+end
+
+local function runHeartbeatAfterCollectionError(err)
+    local ok, heartbeatErr = xpcall(function() heartbeat("error", err.Code) end, capture)
+    if not ok then
+        if heartbeatErr.Code == "STOPPED" then return false, heartbeatErr end
+        log(heartbeatErr.Code, heartbeatErr.Detail)
+        if terminalApiError(heartbeatErr.Code) then return false, heartbeatErr end
+    end
+    return true, heartbeatErr
+end
+
+local function initialSnapshot()
+    local deadline = os.clock() + INITIAL_COLLECT_TIMEOUT
+    local lastErr
+    repeat
+        checkRunning()
+        local ok, err = xpcall(syncSnapshot, capture)
+        if ok then return true end
+        if err.Code == "STOPPED" then error(err, 0) end
+        lastErr = err
+        lastError = err.Code
+        log(err.Code, err.Detail)
+        if apiError(err.Code) then return false, err end
+        if os.clock() >= deadline then break end
+        task.wait(INITIAL_RETRY_DELAY)
+    until os.clock() >= deadline
+    return false, lastErr or {Code = "DATA_NOT_READY", Detail = "Initial collection timed out"}
+end
+
+local function runCycle()
+    local ok, err = xpcall(syncSnapshot, capture)
+    if ok then return true end
+    if err.Code == "STOPPED" then return false, err end
+    lastError = err.Code
+    log(err.Code, err.Detail)
+    if terminalApiError(err.Code) then return false, err end
+    if not apiError(err.Code) then
+        local heartbeatOk, heartbeatErr = runHeartbeatAfterCollectionError(err)
+        if not heartbeatOk then return false, heartbeatErr end
+    end
+    phase = "waiting"
+    return true, err
+end
+
+local function run()
+    validate()
+    phase = "loading"
+    waitFor("game loaded", function() return game:IsLoaded() end)
+    player = waitFor("LocalPlayer", function() return Players.LocalPlayer end)
+    if game.GameId ~= 994732206 then fail("WRONG_GAME", "Expected Blox Fruits universe") end
+    integer(player.UserId, "UserId")
+    sessionId = HttpService:GenerateGUID(false)
+    phase = "authenticating"
+    api("/v1/tracker/validate", {schemaVersion = 1, collectorVersion = VERSION, sessionId = sessionId, Name = settings.Name, UserId = player.UserId})
+    phase = "loading"
+    waitFor("DataLoaded and Data", function() return player:FindFirstChild("DataLoaded") and player:FindFirstChild("Data") end)
+    local initialOk, initialErr = initialSnapshot()
+    if initialOk then
+        notifyOnce("Data synced successfully.")
+    else
+        if not apiError(initialErr.Code) then
+            local heartbeatOk, heartbeatErr = runHeartbeatAfterCollectionError(initialErr)
+            if not heartbeatOk and heartbeatErr and apiError(heartbeatErr.Code) then initialErr = heartbeatErr end
+        end
+        notifyOnce(messageFor(initialErr.Code))
+        if terminalApiError(initialErr.Code) then Tracker.Stop() return end
+    end
+    local firstDelay = INTERVAL + ((player.UserId % (STAGGER_MAX_MS + 1)) / 1000)
+    log("STAGGER", tostring(math.floor((firstDelay - INTERVAL) * 1000)) .. "ms")
+    local delay = firstDelay
+    while Tracker.Running do
+        local nextAt = os.clock() + delay
+        delay = INTERVAL
+        while Tracker.Running and os.clock() < nextAt do task.wait(math.min(0.5, nextAt - os.clock())) end
+        if not Tracker.Running then break end
+        local continueRunning, err = runCycle()
+        if not continueRunning then
+            if err and err.Code ~= "STOPPED" then lastError = err.Code end
+            Tracker.Stop()
+            break
+        end
+    end
+end
+
+task.spawn(function()
+    local ok, err = xpcall(run, capture)
+    if not ok and err.Code ~= "STOPPED" then
+        lastError = err.Code
+        log(err.Code, err.Detail)
+        notifyOnce(messageFor(err.Code))
+    end
+    Tracker.Running = false
+    phase = "stopped"
+end)
+
+return Tracker
