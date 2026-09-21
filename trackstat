@@ -1,12 +1,3 @@
-getgenv().Zam2109_Settings = {
-    ['key'] = '__ZAM_KEY__',
-    ['Name'] = '__ZAM_NAME__',
-    ['Type'] = __ZAM_TYPE__,
-    ['Config'] = {
-__ZAM_CONFIG_BLOCK__
-    },
-    ['Debug'] = false,
-}
 
 local scripts = {
     [1] = function()
